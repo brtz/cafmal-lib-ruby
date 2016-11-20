@@ -14,6 +14,21 @@ module Cafmal
       @cafmal_api_url = api_url
     end
 
+    def expired?(force = false)
+      is_expired = false
+      if @token.nil?
+        is_expired = true
+      else
+        is_expired = (Time.at(@decoded_token['payload']['exp']).utc.to_datetime < Time.now().utc.to_datetime)
+        # force is checking against auth from the api itself instead of relying on JWT exp
+        if force
+          request_user = Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub'])
+          is_expired = request_user.nil?
+        end
+      end
+      return is_expired
+    end
+
     def login(email = 'admin@example.com', password = 'cafmal')
       credentials = {auth: {email: email, password: password}}.to_json
       request_auth = Cafmal::Request::Post.new(@cafmal_api_url + '/user_token', credentials, {"Content-Type" => "application/json"})
@@ -23,10 +38,7 @@ module Cafmal
         @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
         @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
 
-        headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-
-        request_teamid = Cafmal::Request::Get.new(@cafmal_api_url + '/users/' + @decoded_token['payload']['sub'].to_s, headers)
-        team_id = JSON.parse(request_teamid.response.body)["team_id"]
+        team_id = Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub'])["team_id"]
 
         event = Cafmal::Event.new(@cafmal_api_url, @token)
         event.create('user_login', "#{email} has logged in.", 'login', 'info', team_id)
@@ -39,9 +51,9 @@ module Cafmal
       unless @token.nil?
         headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
 
-        request_teamid = Cafmal::Request::Get.new(@cafmal_api_url + '/users/' + @decoded_token['payload']['sub'].to_s, headers)
-        team_id = JSON.parse(request_teamid.response.body)["team_id"]
-        email = JSON.parse(request_teamid.response.body)["email"]
+        user = Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub'])
+        team_id = user["team_id"]
+        email = user["email"]
 
         # kind has to be login, as it's a label of events
         event_id = Cafmal::Event.new(@cafmal_api_url, @token).create('user_logout', "#{email} has logged out.", 'login', 'info', team_id)
