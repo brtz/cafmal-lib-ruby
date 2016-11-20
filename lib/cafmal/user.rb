@@ -26,7 +26,7 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_show_user = Cafmal::Request::Get.new(@cafmal_api_url + '/users/' + id.to_s, headers)
       if request_show_user.code < 300
-          JSON.parse(request_show_user.response.body)
+        JSON.parse(request_show_user.response.body)
       end
     end
 
@@ -35,7 +35,7 @@ module Cafmal
       userdata = {email: email, password: password, firstname: firstname, lastname: lastname, password_digest: password_digest, role: role, team_id: team_id}.to_json
       request_create_user = Cafmal::Request::Post.new(@cafmal_api_url + '/users', userdata, headers)
       if request_create_user.code < 300
-          JSON.parse(request_create_user.response.body)['id']
+        JSON.parse(request_create_user.response.body)['id']
       end
     end
 

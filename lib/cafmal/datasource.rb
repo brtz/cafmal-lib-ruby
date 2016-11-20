@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Cafmal
-  class Event
+  class Datasource
     @token = nil
     @decoded_token = nil
     @cafmal_api_url = nil
@@ -24,18 +24,18 @@ module Cafmal
 
     def show(id)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      request_show_event = Cafmal::Request::Get.new(@cafmal_api_url + '/events/' + id.to_s, headers)
-      if request_show_event.code < 300
-        JSON.parse(request_show_event.response.body)
+      request_show_datasource = Cafmal::Request::Get.new(@cafmal_api_url + '/datasources/' + id.to_s, headers)
+      if request_show_datasource.code < 300
+        JSON.parse(request_show_datasource.response.body)
       end
     end
 
-    def create(name, message, kind, severity, team_id)
+    def create(sourcetype, address, port, protocol, username, password)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      eventdata = {name: name, message: message, kind: kind, severity: severity, team_id: team_id}.to_json
-      request_create_event = Cafmal::Request::Post.new(@cafmal_api_url + '/events', eventdata, headers)
-      if request_create_event.code < 300
-        JSON.parse(request_create_event.response.body)['id']
+      datasourcedata = {sourcetype: sourcetype, address: address, port: port, protocol: protocol, username: username, password: password}.to_json
+      request_create_datasource = Cafmal::Request::Post.new(@cafmal_api_url + '/datasources', datasourcedata, headers)
+      if request_create_datasource.code < 300
+        JSON.parse(request_create_datasource.response.body)['id']
       end
     end
 

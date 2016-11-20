@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 module Cafmal
-  class Team
+  class Alerter
     @token = nil
     @decoded_token = nil
     @cafmal_api_url = nil
@@ -24,18 +24,18 @@ module Cafmal
 
     def show(id)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      request_show_team = Cafmal::Request::Get.new(@cafmal_api_url + '/teams/' + id.to_s, headers)
-      if request_show_team.code < 300
-        JSON.parse(request_show_team.response.body)
+      request_show_alerter = Cafmal::Request::Get.new(@cafmal_api_url + '/alerters/' + id.to_s, headers)
+      if request_show_alerter.code < 300
+        JSON.parse(request_show_alerter.response.body)
       end
     end
 
-    def create(name)
+    def create(uuid, supported_targets, heartbeat_received_at)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      teamdata = {name: name}.to_json
-      request_create_team = Cafmal::Request::Post.new(@cafmal_api_url + '/teams', teamdata, headers)
-      if request_create_team.code < 300
-        JSON.parse(request_create_team.response.body)['id']
+      alerterdata = {uuid: uuid, supported_targets: supported_targets, heartbeat_received_at: heartbeat_received_at}.to_json
+      request_create_alerter = Cafmal::Request::Post.new(@cafmal_api_url + '/alerters', alerterdata, headers)
+      if request_create_alerter.code < 300
+        JSON.parse(request_create_alerter.response.body)['id']
       end
     end
 
