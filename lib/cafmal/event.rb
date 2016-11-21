@@ -18,8 +18,11 @@ module Cafmal
       @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
     end
 
-    def list(name = nil, between_start = nil, between_end = nil, message = nil, kind = nil, severity = nil, team_id = nil)
-      #
+    def list(age = nil, duration = 3600)
+      query = age.nil? ? "" : "?query[age]=#{age}&query[duration]=#{duration}"
+
+      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
+      request_list_events = Cafmal::Request::Get.new(@cafmal_api_url + '/events' + query, headers )
     end
 
     def show(id)
