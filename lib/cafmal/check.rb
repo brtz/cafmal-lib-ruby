@@ -26,7 +26,7 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_show_check = Cafmal::Request::Get.new(@cafmal_api_url + '/checks/' + id.to_s, headers)
       if request_show_check.code < 300
-        JSON.parse(request_show_check.response.body)
+        return request_show_check.response.body
       end
     end
 
@@ -47,7 +47,7 @@ module Cafmal
       }.to_json
       request_create_check = Cafmal::Request::Post.new(@cafmal_api_url + '/checks', checkdata, headers)
       if request_create_check.code < 300
-        JSON.parse(request_create_check.response.body)['id']
+        return request_create_check.response.body
       end
     end
 

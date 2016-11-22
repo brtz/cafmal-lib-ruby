@@ -26,7 +26,7 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_show_event = Cafmal::Request::Get.new(@cafmal_api_url + '/events/' + id.to_s, headers)
       if request_show_event.code < 300
-        JSON.parse(request_show_event.response.body)
+        return request_show_event.response.body
       end
     end
 
@@ -35,7 +35,7 @@ module Cafmal
       eventdata = {name: name, message: message, kind: kind, severity: severity, team_id: team_id}.to_json
       request_create_event = Cafmal::Request::Post.new(@cafmal_api_url + '/events', eventdata, headers)
       if request_create_event.code < 300
-        JSON.parse(request_create_event.response.body)['id']
+        return request_create_event.response.body
       end
     end
 

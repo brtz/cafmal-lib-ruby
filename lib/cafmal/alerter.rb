@@ -26,7 +26,7 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_show_alerter = Cafmal::Request::Get.new(@cafmal_api_url + '/alerters/' + id.to_s, headers)
       if request_show_alerter.code < 300
-        JSON.parse(request_show_alerter.response.body)
+        return request_show_alerter.response.body
       end
     end
 
@@ -35,7 +35,7 @@ module Cafmal
       alerterdata = {uuid: uuid, supported_targets: supported_targets, heartbeat_received_at: heartbeat_received_at}.to_json
       request_create_alerter = Cafmal::Request::Post.new(@cafmal_api_url + '/alerters', alerterdata, headers)
       if request_create_alerter.code < 300
-        JSON.parse(request_create_alerter.response.body)['id']
+        return request_create_alerter.response.body
       end
     end
 

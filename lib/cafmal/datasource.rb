@@ -18,7 +18,7 @@ module Cafmal
       @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
     end
 
-    def list(name = nil, between_start = nil, between_end = nil, message = nil, kind = nil, severity = nil, team_id = nil)
+    def list()
       #
     end
 
@@ -26,7 +26,7 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_show_datasource = Cafmal::Request::Get.new(@cafmal_api_url + '/datasources/' + id.to_s, headers)
       if request_show_datasource.code < 300
-        JSON.parse(request_show_datasource.response.body)
+        return request_show_datasource.response.body
       end
     end
 
@@ -35,7 +35,7 @@ module Cafmal
       datasourcedata = {sourcetype: sourcetype, address: address, port: port, protocol: protocol, username: username, password: password}.to_json
       request_create_datasource = Cafmal::Request::Post.new(@cafmal_api_url + '/datasources', datasourcedata, headers)
       if request_create_datasource.code < 300
-        JSON.parse(request_create_datasource.response.body)['id']
+        return request_create_datasource.response.body
       end
     end
 

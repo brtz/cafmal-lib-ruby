@@ -26,7 +26,7 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_show_alert = Cafmal::Request::Get.new(@cafmal_api_url + '/alerts/' + id.to_s, headers)
       if request_show_alert.code < 300
-        JSON.parse(request_show_alert.response.body)
+        return request_show_alert.response.body
       end
     end
 
@@ -35,7 +35,7 @@ module Cafmal
       alertdata = {cooldown: cooldown, alert_method: alert_method, alert_target: alert_target, is_active: is_active, minimum_severity: minimum_severity, team_id: team_id}.to_json
       request_create_alert = Cafmal::Request::Post.new(@cafmal_api_url + '/alerts', alertdata, headers)
       if request_create_alert.code < 300
-        JSON.parse(request_create_alert.response.body)['id']
+        return request_create_alert.response.body
       end
     end
 

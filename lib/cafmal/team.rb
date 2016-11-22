@@ -26,7 +26,7 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_show_team = Cafmal::Request::Get.new(@cafmal_api_url + '/teams/' + id.to_s, headers)
       if request_show_team.code < 300
-        JSON.parse(request_show_team.response.body)
+        return request_show_team.response.body
       end
     end
 
@@ -35,7 +35,7 @@ module Cafmal
       teamdata = {name: name}.to_json
       request_create_team = Cafmal::Request::Post.new(@cafmal_api_url + '/teams', teamdata, headers)
       if request_create_team.code < 300
-        JSON.parse(request_create_team.response.body)['id']
+        return request_create_team.response.body
       end
     end
 
