@@ -22,7 +22,8 @@ module Cafmal
       query = age.nil? ? "" : "?query[age]=#{age}&query[duration]=#{duration}"
 
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      request_list_events = Cafmal::Request::Get.new(@cafmal_api_url + '/events' + query, headers )
+      request_list_events = Cafmal::Request::Get.new(@cafmal_api_url + '/events' + query, headers)
+      p request_list_events.response.body
 
       return request_list_events.response.body
     end

@@ -22,7 +22,7 @@ module Cafmal
         is_expired = (Time.at(@decoded_token['payload']['exp']).utc.to_datetime < Time.now().utc.to_datetime)
         # force is checking against auth from the api itself instead of relying on JWT exp
         if force
-          request_user = Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub'])
+          request_user = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))
           is_expired = request_user.nil?
         end
       end
@@ -38,7 +38,7 @@ module Cafmal
         @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
         @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
 
-        team_id = Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub'])["team_id"]
+        team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))["team_id"]
 
         event = Cafmal::Event.new(@cafmal_api_url, @token)
         event.create('user_login', "#{email} has logged in.", 'login', 'info', team_id)
@@ -51,12 +51,12 @@ module Cafmal
       unless @token.nil?
         headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
 
-        user = Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub'])
+        user = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))
         team_id = user["team_id"]
         email = user["email"]
 
         # kind has to be login, as it's a label of events
-        event_id = Cafmal::Event.new(@cafmal_api_url, @token).create('user_logout', "#{email} has logged out.", 'login', 'info', team_id)
+        event_id = JSON.parse(Cafmal::Event.new(@cafmal_api_url, @token).create('user_logout', "#{email} has logged out.", 'login', 'info', team_id))
 
         if event_id.nil?
           false
