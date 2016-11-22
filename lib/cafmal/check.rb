@@ -10,9 +10,9 @@ module Cafmal
     attr_reader :decoded_token
     attr_reader :cafmal_api_url
 
-    def initialize(auth)
-      @cafmal_api_url = auth.cafmal_api_url
-      @token = auth.token
+    def initialize(cafmal_api_url, token)
+      @cafmal_api_url = cafmal_api_url
+      @token = token
       @decoded_token = {}
       @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
       @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
