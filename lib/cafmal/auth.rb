@@ -47,16 +47,21 @@ module Cafmal
       end
     end
 
-    def logout
-      unless @token.nil?
-        headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
+    # we supply the token here, so web does not have to cache the auth obj
+    def logout(token)
+      unless token.nil?
+        headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{token}"}
 
-        user = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))
+        decoded_token = {}
+        decoded_token['header'] = JSON.parse(Base64.decode64(token.split('.')[0]))
+        decoded_token['payload'] = JSON.parse(Base64.decode64(token.split('.')[1]))
+
+        user = JSON.parse(Cafmal::User.new(@cafmal_api_url, token).show(decoded_token['payload']['sub']))
         team_id = user["team_id"]
         email = user["email"]
 
         # kind has to be login, as it's a label of events
-        event_id = JSON.parse(Cafmal::Event.new(@cafmal_api_url, @token).create('user_logout', "#{email} has logged out.", 'login', 'info', team_id))
+        event_id = JSON.parse(Cafmal::Event.new(@cafmal_api_url, token).create('user_logout', "#{email} has logged out.", 'login', 'info', team_id))
 
         if event_id.nil?
           false
