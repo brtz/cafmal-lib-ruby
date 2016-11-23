@@ -1,37 +1,7 @@
 # encoding: utf-8
 
 module Cafmal
-  class User
-    @token = nil
-    @decoded_token = nil
-    @cafmal_api_url = nil
-
-    attr_reader :token
-    attr_reader :decoded_token
-    attr_reader :cafmal_api_url
-
-    def initialize(cafmal_api_url, token)
-      @cafmal_api_url = cafmal_api_url
-      @token = token
-      @decoded_token = {}
-      @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
-      @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
-    end
-
-    def list()
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      request_list_users = Cafmal::Request::Get.new(@cafmal_api_url + '/users', headers)
-
-      return request_list_users.response.body
-    end
-
-    def show(id)
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      request_show_user = Cafmal::Request::Get.new(@cafmal_api_url + '/users/' + id.to_s, headers)
-      if request_show_user.code < 300
-        return request_show_user.response.body
-      end
-    end
+  class User < Resource
 
     def create(email, password, firstname, lastname, password_digest, role, team_id)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}

@@ -15,4 +15,5 @@ module Cafmal
   autoload 'Worker', 'cafmal/worker'
 end
 
+require 'cafmal/resource'
 require 'cafmal/request'
