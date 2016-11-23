@@ -1,14 +1,14 @@
 # encoding: utf-8
 
 module Cafmal
-  class Event < Resource
+  class Worker < Resource
 
-    def create(name, message, kind, severity, team_id)
+    def create(uuid, supported_sourcetype, heartbeat_received_at)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      eventdata = {name: name, message: message, kind: kind, severity: severity, team_id: team_id}.to_json
-      request_create_event = Cafmal::Request::Post.new(@cafmal_api_url + '/events', eventdata, headers)
-      if request_create_event.code < 300
-        return request_create_event.response.body
+      workerdata = {uuid: uuid, supported_sourcetype: supported_sourcetype, heartbeat_received_at: heartbeat_received_at}.to_json
+      request_create_worker = Cafmal::Request::Post.new(@cafmal_api_url + '/workers', workerdata, headers)
+      if request_create_worker.code < 300
+        return request_create_worker.response.body
       end
     end
 
