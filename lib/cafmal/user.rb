@@ -19,7 +19,10 @@ module Cafmal
     end
 
     def list()
-      #
+      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
+      request_list_users = Cafmal::Request::Get.new(@cafmal_api_url + '/users', headers)
+
+      return request_list_users.response.body
     end
 
     def show(id)

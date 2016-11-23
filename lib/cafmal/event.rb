@@ -23,7 +23,6 @@ module Cafmal
 
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       request_list_events = Cafmal::Request::Get.new(@cafmal_api_url + '/events' + query, headers)
-      p request_list_events.response.body
 
       return request_list_events.response.body
     end
