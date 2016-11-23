@@ -5,7 +5,7 @@ module Cafmal
     @token = nil
     @decoded_token = nil
     @cafmal_api_url = nil
-    @query = ""
+    @query = nil
 
     attr_reader :token
     attr_reader :decoded_token
@@ -19,6 +19,7 @@ module Cafmal
       @decoded_token = {}
       @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
       @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
+      @query = ""
     end
 
     def list(*options)
