@@ -6,6 +6,8 @@ module Cafmal
     @decoded_token = nil
     @cafmal_api_url = nil
     @query = nil
+    @headers = nil
+    @resourcename = nil
 
     attr_reader :token
     attr_reader :decoded_token
@@ -20,44 +22,36 @@ module Cafmal
       @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
       @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
       @query = ""
+      @headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
+      @resourcename = (demodulize(self.class.name) + "s").downcase
     end
 
     def list(*options)
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      resourcename = (demodulize(self.class.name) + "s").downcase
-      request_list_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{resourcename}" + @query, headers)
+      request_list_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}" + @query, @headers)
 
       return request_list_resource.response.body
     end
 
     def show(id)
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      resourcename = (demodulize(self.class.name) + "s").downcase
-      request_show_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{resourcename}/" + id.to_s, headers)
+      request_show_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}/" + id.to_s, @headers)
 
       return request_show_resource.response.body
     end
 
     def create(params)
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      resourcename = (demodulize(self.class.name) + "s").downcase
-      request_create_resource = Cafmal::Request::Post.new(@cafmal_api_url + "/#{resourcename}", params.to_json, headers)
+      request_create_resource = Cafmal::Request::Post.new(@cafmal_api_url + "/#{@resourcename}", params.to_json, @headers)
 
       return request_create_resource.response.body
     end
 
     def update(params)
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      resourcename = (demodulize(self.class.name) + "s").downcase
-      request_update_resource = Cafmal::Request::Put.new(@cafmal_api_url + "/#{resourcename}/#{params['id']}", params.to_json, headers)
+      request_update_resource = Cafmal::Request::Put.new(@cafmal_api_url + "/#{@resourcename}/#{params['id']}", params.to_json, @headers)
 
       return request_update_resource.response.body
     end
 
     def new
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      resourcename = (demodulize(self.class.name) + "s").downcase
-      request_new_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{resourcename}/new", headers)
+      request_new_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}/new", @headers)
 
       return request_new_resource.response.body
     end
