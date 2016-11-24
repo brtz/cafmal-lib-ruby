@@ -41,7 +41,7 @@ module Cafmal
         team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))["team_id"]
 
         event = Cafmal::Event.new(@cafmal_api_url, @token)
-        event.create({name: 'user_login', message: "#{email} has logged in.", kind: 'login', severity: 'info', team_id: team_id})
+        event.create({name: 'user.login', message: "#{email} has logged in.", kind: 'login', severity: 'info', team_id: team_id})
 
         #@TODO silence all alerts for your team_id, set silenced_at now + 1h
 
@@ -65,7 +65,7 @@ module Cafmal
         #@TODO if you are the last logged in user, unsilence your team alerts
 
         # kind has to be login, as it's a label of events
-        event_id = JSON.parse(Cafmal::Event.new(@cafmal_api_url, token).create({name: 'user_logout', message: "#{email} has logged out.", kind: 'login', severity: 'info', team_id: team_id}))
+        event_id = JSON.parse(Cafmal::Event.new(@cafmal_api_url, token).create({name: 'user.logout', message: "#{email} has logged out.", kind: 'login', severity: 'info', team_id: team_id}))
 
         if event_id.nil?
           false
