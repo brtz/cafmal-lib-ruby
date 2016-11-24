@@ -46,6 +46,14 @@ module Cafmal
       return request_create_resource.response.body
     end
 
+    def update(params)
+      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
+      resourcename = (demodulize(self.class.name) + "s").downcase
+      request_update_resource = Cafmal::Request::Put.new(@cafmal_api_url + "/#{resourcename}", params.to_json, headers)
+
+      return request_update_resource.response.body
+    end
+
     def new
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       resourcename = (demodulize(self.class.name) + "s").downcase

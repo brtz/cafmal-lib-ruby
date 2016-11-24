@@ -25,5 +25,15 @@ module Cafmal
       end
     end
 
+    class Put
+      attr_reader :response
+      attr_reader :code
+
+      def initialize(url, body, headers)
+        @response = HTTParty.put(url, body: body, headers: headers)
+        @code = @response.code
+      end
+    end
+
   end
 end
