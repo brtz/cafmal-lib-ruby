@@ -34,27 +34,24 @@ module Cafmal
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       resourcename = (demodulize(self.class.name) + "s").downcase
       request_show_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{resourcename}/" + id.to_s, headers)
-      if request_show_resource.code < 300
-        return request_show_resource.response.body
-      end
+
+      return request_show_resource.response.body
     end
 
     def create(params)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       resourcename = (demodulize(self.class.name) + "s").downcase
       request_create_resource = Cafmal::Request::Post.new(@cafmal_api_url + "/#{resourcename}", params.to_json, headers)
-      if request_create_resource.code < 300
-        return request_create_resource.response.body
-      end
+
+      return request_create_resource.response.body
     end
 
     def new
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
       resourcename = (demodulize(self.class.name) + "s").downcase
       request_new_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{resourcename}/new", headers)
-      if request_new_resource.code < 300
-        return request_new_resource.response.body
-      end
+
+      return request_new_resource.response.body
     end
 
     def demodulize(path)
