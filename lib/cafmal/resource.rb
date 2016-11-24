@@ -39,8 +39,13 @@ module Cafmal
       end
     end
 
-    def create
-
+    def create(params)
+      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
+      params = params.to_json
+      request_create_resource = Cafmal::Request::Post.new(@cafmal_api_url + "/#{resourcename}", params, headers)
+      if request_create_resource.code < 300
+        return request_create_resource.response.body
+      end
     end
 
     def new
