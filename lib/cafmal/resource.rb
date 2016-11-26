@@ -26,6 +26,18 @@ module Cafmal
       @resourcename = (demodulize(self.class.name) + "s").downcase
     end
 
+    def create(params)
+      request_create_resource = Cafmal::Request::Post.new(@cafmal_api_url + "/#{@resourcename}", params.to_json, @headers)
+
+      return request_create_resource.response.body
+    end
+
+    def new
+      request_new_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}/new", @headers)
+
+      return request_new_resource.response.body
+    end
+
     def list(*options)
       request_list_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}" + @query, @headers)
 
@@ -38,23 +50,19 @@ module Cafmal
       return request_show_resource.response.body
     end
 
-    def create(params)
-      request_create_resource = Cafmal::Request::Post.new(@cafmal_api_url + "/#{@resourcename}", params.to_json, @headers)
-
-      return request_create_resource.response.body
-    end
-
     def update(params)
       request_update_resource = Cafmal::Request::Put.new(@cafmal_api_url + "/#{@resourcename}/#{params['id']}", params.to_json, @headers)
 
       return request_update_resource.response.body
     end
 
-    def new
-      request_new_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}/new", @headers)
+    def destroy(params)
+      request_destroy_resource = Cafmal::Request::Delete.new(@cafmal_api_url + "/#{@resourcename}/#{params['id']}", params.to_json, @headers)
 
-      return request_new_resource.response.body
+      return request_destroy_resource.response.body
     end
+
+    # helpers below
 
     def demodulize(path)
       path = path.to_s
