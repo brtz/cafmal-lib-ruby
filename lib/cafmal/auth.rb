@@ -38,12 +38,13 @@ module Cafmal
         @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
         @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
 
-        team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))["team_id"]
+        if (@decoded_token['payload']['role'] == 'user' || @decoded_token['payload']['role'] == 'admin')
+          team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))["team_id"]
+          event = Cafmal::Event.new(@cafmal_api_url, @token)
+          event.create({name: 'user.login', message: "#{email} has logged in.", kind: 'login', severity: 'info', team_id: team_id})
 
-        event = Cafmal::Event.new(@cafmal_api_url, @token)
-        event.create({name: 'user.login', message: "#{email} has logged in.", kind: 'login', severity: 'info', team_id: team_id})
-
-        #@TODO silence all alerts for your team_id, set silenced_at now + 1h
+          #@TODO silence all alerts for your team_id, set silenced_at now + 1h
+        end
 
         true
       end
