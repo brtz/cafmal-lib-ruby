@@ -77,9 +77,9 @@ module Cafmal
     end
 
     # refresh token
-    def refresh
-      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{@token}"}
-      credentials = {token: @token}.to_json
+    def refresh(token)
+      headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{token}"}
+      credentials = {token: token}.to_json
       refresh_request = Cafmal::Request::Post.new(@cafmal_api_url + '/user_token_refresh', credentials, headers)
       if refresh_request.code < 300
         @token = JSON.parse(refresh_request.response.body)['jwt']
