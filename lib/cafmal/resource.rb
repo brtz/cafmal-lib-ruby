@@ -29,37 +29,37 @@ module Cafmal
     def create(params)
       request_create_resource = Cafmal::Request::Post.new(@cafmal_api_url + "/#{@resourcename}", params.to_json, @headers)
 
-      return request_create_resource.response.body
+      return request_create_resource.response
     end
 
     def new
       request_new_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}/new", @headers)
 
-      return request_new_resource.response.body
+      return request_new_resource.response
     end
 
     def list(*options)
       request_list_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}" + @query, @headers)
 
-      return request_list_resource.response.body
+      return request_list_resource.response
     end
 
     def show(id)
       request_show_resource = Cafmal::Request::Get.new(@cafmal_api_url + "/#{@resourcename}/" + id.to_s, @headers)
 
-      return request_show_resource.response.body
+      return request_show_resource.response
     end
 
     def update(params)
       request_update_resource = Cafmal::Request::Put.new(@cafmal_api_url + "/#{@resourcename}/#{params['id']}", params.to_json, @headers)
 
-      return request_update_resource.response.body
+      return request_update_resource.response
     end
 
     def destroy(params)
       request_destroy_resource = Cafmal::Request::Delete.new(@cafmal_api_url + "/#{@resourcename}/#{params['id']}", params.to_json, @headers)
 
-      return request_destroy_resource.response.body
+      return request_destroy_resource.response
     end
 
     # helpers below

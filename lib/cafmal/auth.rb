@@ -32,14 +32,14 @@ module Cafmal
     def login(email = 'admin@example.com', password = 'cafmal')
       credentials = {auth: {email: email, password: password}}.to_json
       request_auth = Cafmal::Request::Post.new(@cafmal_api_url + '/user_token', credentials, {"Content-Type" => "application/json"})
-      if request_auth.code < 300
+      if request_auth.response.code < 300
         @token = JSON.parse(request_auth.response.body)["jwt"]
         @decoded_token = {}
         @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
         @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
 
         if (@decoded_token['payload']['role'] != 'worker' && @decoded_token['payload']['role'] != 'alerter')
-          team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))["team_id"]
+          team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']).body)["team_id"]
           event = Cafmal::Event.new(@cafmal_api_url, @token)
           event.create({name: 'user.login', message: "#{email} has logged in.", kind: 'login', severity: 'info', team_id: team_id})
 
@@ -58,14 +58,12 @@ module Cafmal
       decoded_token['header'] = JSON.parse(Base64.decode64(token.split('.')[0]))
       decoded_token['payload'] = JSON.parse(Base64.decode64(token.split('.')[1]))
 
-      user = JSON.parse(Cafmal::User.new(@cafmal_api_url, token).show(decoded_token['payload']['sub']))
+      user = JSON.parse(Cafmal::User.new(@cafmal_api_url, token).show(decoded_token['payload']['sub']).body)
       team_id = user["team_id"]
       email = user["email"]
 
-      #@TODO if you are the last logged in user, unsilence your team alerts
-
       # kind has to be login, as it's a label of events
-      event_id = JSON.parse(Cafmal::Event.new(@cafmal_api_url, token).create({name: 'user.logout', message: "#{email} has logged out.", kind: 'login', severity: 'info', team_id: team_id}))
+      event_id = JSON.parse(Cafmal::Event.new(@cafmal_api_url, token).create({name: 'user.logout', message: "#{email} has logged out.", kind: 'login', severity: 'info', team_id: team_id}).body)
 
       if event_id.nil?
         false
@@ -80,19 +78,17 @@ module Cafmal
     def refresh(token)
       headers = {"Content-Type" => "application/json", "Authorization" => "Bearer #{token}"}
       credentials = {token: token}.to_json
-      refresh_request = Cafmal::Request::Post.new(@cafmal_api_url + '/user_token_refresh', credentials, headers)
-      if refresh_request.code < 300
-        @token = JSON.parse(refresh_request.response.body)['jwt']
+      request_refresh = Cafmal::Request::Post.new(@cafmal_api_url + '/user_token_refresh', credentials, headers)
+      if request_refresh.response.code < 300
+        @token = JSON.parse(request_refresh.response.body)['jwt']
         @decoded_token = {}
         @decoded_token['header'] = JSON.parse(Base64.decode64(@token.split('.')[0]))
         @decoded_token['payload'] = JSON.parse(Base64.decode64(@token.split('.')[1]))
 
         if (@decoded_token['payload']['role'] != 'worker' && @decoded_token['payload']['role'] != 'alerter')
-          team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']))["team_id"]
+          team_id = JSON.parse(Cafmal::User.new(@cafmal_api_url, @token).show(@decoded_token['payload']['sub']).body)["team_id"]
           event = Cafmal::Event.new(@cafmal_api_url, @token)
           event.create({name: 'user.refresh_login', message: "#{@decoded_token['payload']['email']} has refreshed his login.", kind: 'login', severity: 'info', team_id: team_id})
-
-          #@TODO silence all alerts for your team_id, set silenced_at now + 1h
         end
         return true
       else
